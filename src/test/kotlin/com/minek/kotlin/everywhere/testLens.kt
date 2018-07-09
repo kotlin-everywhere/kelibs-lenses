@@ -1,9 +1,6 @@
 package com.minek.kotlin.everywhere
 
-import com.minek.kotlin.everywhere.lenses.from
-import com.minek.kotlin.everywhere.lenses.map
-import com.minek.kotlin.everywhere.lenses.plus
-import com.minek.kotlin.everywhere.lenses.set
+import com.minek.kotlin.everywhere.lenses.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -40,5 +37,16 @@ class TestLens {
 
         val byMap2 = People::tom + Person::age from people map { 22 }
         assertEquals(byCopy, byMap2)
+    }
+
+    @Test
+    fun testReflectCopy() {
+        data class Person(val name: String, val age: Int)
+
+        val john = Person("john", 21)
+
+        val byCopy = john.copy(age = 22)
+        val byReflectCopy = john.reflectCopy("age", 22)
+        assertEquals(byReflectCopy, byCopy)
     }
 }

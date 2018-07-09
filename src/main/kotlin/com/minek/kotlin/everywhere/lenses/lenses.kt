@@ -1,6 +1,7 @@
 package com.minek.kotlin.everywhere.lenses
 
 import kotlin.reflect.*
+import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.memberFunctions
 
@@ -65,3 +66,17 @@ infix fun <T : Any, U> Lens<T, U>.map(mapper: (U) -> U): T = set(mapper(property
 infix operator fun <T : Any, U : Any, V> KProperty1<T, U>.plus(property: KProperty1<U, V>): KProperty1<T, V> = MergedProperty(this, property)
 
 infix fun <T : Any, R> KProperty1<T, R>.from(from: T): Lens<T, R> = Lens(this, from)
+
+private val reflectCopyPool = mutableMapOf<KClass<*>, MutableMap<String, (Any, Any) -> Any>>()
+fun <T : Any> T.reflectCopy(name: String, value: Any): T {
+    @Suppress("UNCHECKED_CAST")
+    return reflectCopyPool
+            .getOrPut(this::class) { mutableMapOf() }
+            .getOrPut(name) {
+                val copy = this::class.memberFunctions.firstOrNull { it.name == "copy" }
+                        ?: error("Cannot find data class copy method")
+                val parameter = copy.findParameterByName(name)!!
+                { instance: Any, value: Any -> copy.callBy(mapOf(copy.instanceParameter!! to instance, parameter to value))!! }
+            }
+            .invoke(this, value) as T
+}
