@@ -21,9 +21,11 @@ targetCompatibility = 1.8
 apply plugin: 'kotlin'
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.freeCompilerArgs = ['-Xallow-kotlin-package']
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.freeCompilerArgs = ['-Xallow-kotlin-package']
 }
 
 apply plugin: 'maven'

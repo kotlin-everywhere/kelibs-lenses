@@ -1,5 +1,6 @@
 package com.minek.kotlin.everywhere.lenses
 
+import kotlin.internal.Exact
 import kotlin.reflect.*
 import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.full.instanceParameter
@@ -68,6 +69,7 @@ infix operator fun <T : Any, U : Any, V> KProperty1<T, U>.plus(property: KProper
 infix fun <T : Any, R> KProperty1<T, R>.from(from: T): Lens<T, R> = Lens(this, from)
 
 private val reflectCopyPool = mutableMapOf<KClass<*>, MutableMap<String, (Any, Any) -> Any>>()
+
 fun <T : Any> T.reflectCopy(name: String, value: Any): T {
     @Suppress("UNCHECKED_CAST")
     return reflectCopyPool
@@ -80,3 +82,5 @@ fun <T : Any> T.reflectCopy(name: String, value: Any): T {
             }
             .invoke(this, value) as T
 }
+
+fun <T: Any, V: Any> T.reflectCopy(property: KProperty1<@Exact T, @Exact V>, value : V): T = reflectCopy(property.name, value)

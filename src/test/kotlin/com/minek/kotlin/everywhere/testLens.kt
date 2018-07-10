@@ -39,14 +39,22 @@ class TestLens {
         assertEquals(byCopy, byMap2)
     }
 
+    private interface HasName {
+        val name: String
+    }
+
     @Test
     fun testReflectCopy() {
-        data class Person(val name: String, val age: Int)
+        data class Person(override val name: String, val age: Int) : HasName
 
         val john = Person("john", 21)
+        val copyJohn = john.copy(age = 22)
+        val reflectCopyJohn = john.reflectCopy("age", 22)
+        assertEquals(reflectCopyJohn, copyJohn)
 
-        val byCopy = john.copy(age = 22)
-        val byReflectCopy = john.reflectCopy("age", 22)
-        assertEquals(byReflectCopy, byCopy)
+        val tom: HasName = Person("Tom", 21)
+        val reflectCopyTom = tom.reflectCopy(HasName::name, "Tim")
+        val copyTom = (tom as Person).copy(name = "Tim")
+        assertEquals(reflectCopyTom, copyTom)
     }
 }
