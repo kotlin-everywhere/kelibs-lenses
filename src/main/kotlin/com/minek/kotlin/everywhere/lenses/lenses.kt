@@ -83,4 +83,5 @@ fun <T : Any> T.reflectCopy(name: String, value: Any): T {
             .invoke(this, value) as T
 }
 
-fun <T: Any, V: Any> T.reflectCopy(property: KProperty1<@Exact T, @Exact V>, value : V): T = reflectCopy(property.name, value)
+fun <T : Any, V : Any> T.reflectCopy(property: KProperty1<@Exact T, @Exact V>, value: V): T = reflectCopy(property.name, value)
+fun <T : Any, V : Any> T.reflectCopy(property: KProperty0<@Exact V>, value: V): T = reflectCopy(property.name, value)

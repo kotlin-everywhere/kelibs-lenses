@@ -56,5 +56,10 @@ class TestLens {
         val reflectCopyTom = tom.reflectCopy(HasName::name, "Tim")
         val copyTom = (tom as Person).copy(name = "Tim")
         assertEquals(reflectCopyTom, copyTom)
+
+        val jane = Person("Jane", 21)
+        val copyJane = jane.copy(age = 22)
+        val reflectCopyJane = jane.reflectCopy(jane::age, 22)
+        assertEquals(reflectCopyJane, copyJane)
     }
 }
