@@ -68,9 +68,9 @@ infix operator fun <T : Any, U : Any, V> KProperty1<T, U>.plus(property: KProper
 
 infix fun <T : Any, R> KProperty1<T, R>.from(from: T): Lens<T, R> = Lens(this, from)
 
-private val reflectCopyPool = mutableMapOf<KClass<*>, MutableMap<String, (Any, Any) -> Any>>()
+private val reflectCopyPool = mutableMapOf<KClass<*>, MutableMap<String, (Any, Any?) -> Any>>()
 
-fun <T : Any> T.reflectCopy(name: String, value: Any): T {
+fun <T : Any> T.reflectCopy(name: String, value: Any?): T {
     @Suppress("UNCHECKED_CAST")
     return reflectCopyPool
             .getOrPut(this::class) { mutableMapOf() }
@@ -78,10 +78,10 @@ fun <T : Any> T.reflectCopy(name: String, value: Any): T {
                 val copy = this::class.memberFunctions.firstOrNull { it.name == "copy" }
                         ?: error("Cannot find data class copy method")
                 val parameter = copy.findParameterByName(name)!!
-                { instance: Any, value: Any -> copy.callBy(mapOf(copy.instanceParameter!! to instance, parameter to value))!! }
+                { instance: Any, value: Any? -> copy.callBy(mapOf(copy.instanceParameter!! to instance, parameter to value))!! }
             }
             .invoke(this, value) as T
 }
 
-fun <T : Any, V : Any> T.reflectCopy(property: KProperty1<@Exact T, @Exact V>, value: V): T = reflectCopy(property.name, value)
-fun <T : Any, V : Any> T.reflectCopy(property: KProperty0<@Exact V>, value: V): T = reflectCopy(property.name, value)
+fun <T : Any, V : Any?> T.reflectCopy(property: KProperty1<@Exact T, @Exact V>, value: V): T = reflectCopy(property.name, value)
+fun <T : Any, V : Any?> T.reflectCopy(property: KProperty0<@Exact V>, value: V): T = reflectCopy(property.name, value)

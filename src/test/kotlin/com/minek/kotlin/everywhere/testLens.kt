@@ -45,21 +45,31 @@ class TestLens {
 
     @Test
     fun testReflectCopy() {
-        data class Person(override val name: String, val age: Int) : HasName
+        data class Person(override val name: String, val age: Int, val sex: String?) : HasName
 
-        val john = Person("john", 21)
+        val john = Person("john", 21, "M")
         val copyJohn = john.copy(age = 22)
         val reflectCopyJohn = john.reflectCopy("age", 22)
         assertEquals(reflectCopyJohn, copyJohn)
 
-        val tom: HasName = Person("Tom", 21)
+        val tom: HasName = Person("Tom", 21, "M")
         val reflectCopyTom = tom.reflectCopy(HasName::name, "Tim")
         val copyTom = (tom as Person).copy(name = "Tim")
         assertEquals(reflectCopyTom, copyTom)
 
-        val jane = Person("Jane", 21)
+        val jane = Person("Jane", 21, "F")
         val copyJane = jane.copy(age = 22)
         val reflectCopyJane = jane.reflectCopy(jane::age, 22)
         assertEquals(reflectCopyJane, copyJane)
+
+        val jin = Person("Jin", 21, "F")
+        val copyJin = jin.copy(sex = "M")
+        val reflectCopyJin = jin.reflectCopy(jane::sex, "M")
+        assertEquals(reflectCopyJin, copyJin)
+
+        val jim = Person("Jim", 21, "M")
+        val copyJim = jim.copy(sex = null)
+        val reflectCopyJim = jim.reflectCopy(jane::sex, null)
+        assertEquals(reflectCopyJim, copyJim)
     }
 }
